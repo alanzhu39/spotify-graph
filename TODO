@@ -8,10 +8,24 @@ todo:
   - implement spotify auth flow so we can start getting data
   - test graph library
     - maybe can use test data?
+    - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
 - azure static web app deployment
 - readme
 
 12/4/22:
+In progress:
+- brainstorm components skeleton
+- test graph library
+  - maybe can use test data?
+  - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
+
+Finished:
+- start angular project setup
+  - set up typescript linting
+
+
+
+12/3/22:
 Initial brainstorm:
 - Main idea is to visualize your Spotify artists in graph form
 - related artists (collected via api) are connected in the graph
