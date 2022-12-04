@@ -8,6 +8,8 @@ todo:
   - implement spotify auth flow so we can start getting data
   - test graph library
     - maybe can use test data?
+- azure static web app deployment
+- readme
 
 12/4/22:
 Initial brainstorm:
