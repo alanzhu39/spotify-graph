@@ -1,0 +1,25 @@
+TODO:
+
+todo:
+- start angular project setup
+  - brainstorm components skeleton
+  - set up typescript linting
+- not sure which of the two below to implement first
+  - implement spotify auth flow so we can start getting data
+  - test graph library
+    - maybe can use test data?
+
+12/4/22:
+Initial brainstorm:
+- Main idea is to visualize your Spotify artists in graph form
+- related artists (collected via api) are connected in the graph
+- the idea is that artists will be clustered by genre, but there might be interesting connections between certain clusters
+
+Implementation details:
+- learning Angular to build webapp
+- probably just need the frontend, can probably be single page (login overlay, then when signed in it generates the graph)
+  - add settings and stuff in a sidebar to make it prettier
+- integrate with spotify apis, should be not bad since they have p thorough docs
+- find a good graph library, so far visjs looks like it should be good enough
+  - use artist images as nodes, with hover labels (or toggleable?) of their names
+  - any cluster/edge coloring?
