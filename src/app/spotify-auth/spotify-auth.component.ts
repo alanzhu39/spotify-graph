@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SpotifyAuthService } from '../services/spotify-auth.service';
+import { SpotifyApiService } from '../services/spotify-api.service';
 
 @Component({
   selector: 'app-spotify-auth',
@@ -7,17 +7,28 @@ import { SpotifyAuthService } from '../services/spotify-auth.service';
   styleUrls: ['./spotify-auth.component.css']
 })
 export class SpotifyAuthComponent implements OnInit {
-  constructor(private readonly authService: SpotifyAuthService) {}
+  constructor(private readonly apiService: SpotifyApiService) {}
 
-  ngOnInit(): void {
-    // Check for auth redirect callback route
+  ngOnInit() {
+    // Check for callback route
+    if (window.location.pathname === '/callback') {
+      this.handleAuthCallback();
+    }
   }
 
   signInToSpotify() {
-    this.authService.authRedirect();
+    this.apiService.authRedirect();
   }
 
   handleAuthCallback() {
-    this.authService.authCallback();
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    if (code == null || state == null) {
+      // TODO: update error handling
+      console.error('auth callback failed');
+    } else {
+      this.apiService.authCallback(code, state);
+    }
   }
 }

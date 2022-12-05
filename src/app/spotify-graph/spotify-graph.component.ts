@@ -13,7 +13,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
 
   constructor(private readonly graphService: SpotifyGraphService) {}
 
-  ngAfterViewInit() {
+  drawGraph() {
     const container = this.el.nativeElement;
     const data = {
       nodes: this.graphService.getNodes(),
@@ -38,5 +38,9 @@ export class SpotifyGraphComponent implements AfterViewInit {
       }
     };
     this.networkInstance = new Network(container, data, {});
+  }
+
+  ngAfterViewInit() {
+    // this.drawGraph();
   }
 }

@@ -1,21 +1,85 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { stringify } from 'querystring';
+import { generateCodeChallenge, generateRandomString } from '../utils/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpotifyApiService {
-  private authToken: string;
+  private readonly siteUrl = 'http://localhost:4200';
+  private readonly clientId = '85b816ac845f4c718040ef7bddc92a64';
+  private readonly redirectUri = `${this.siteUrl}/callback`;
+  private state: string;
+  private codeVerifier: string;
+  private authToken: SpotifyAuthToken;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+    const state = window.localStorage.getItem('AUTH_STATE');
+    if (state != null) this.state = state;
+    const codeVerifier = window.localStorage.getItem('AUTH_CODE_VERIFIER');
+    if (codeVerifier != null) this.codeVerifier = codeVerifier;
+  }
 
-  setAuthToken(authToken: string) {
+  authRedirect() {
+    this.state = generateRandomString(16);
+    this.codeVerifier = generateRandomString(64);
+
+    window.localStorage.setItem('AUTH_STATE', this.state);
+    window.localStorage.setItem('AUTH_CODE_VERIFIER', this.codeVerifier);
+
+    const scope = 'user-library-read';
+
+    window.location.href =
+      'https://accounts.spotify.com/authorize?' +
+      stringify({
+        response_type: 'code',
+        client_id: this.clientId,
+        scope,
+        redirect_uri: this.redirectUri,
+        state: this.state,
+        code_challenge_method: 'S256',
+        code_challenge: generateCodeChallenge(this.codeVerifier)
+      });
+  }
+
+  authCallback(code: string, state: string) {
+    // Handle auth callback
+    if (state !== this.state) {
+      // TODO
+      console.error('state mismatch!');
+      window.location.replace(this.siteUrl);
+    } else {
+      const body = new URLSearchParams({
+        code,
+        redirect_uri: this.redirectUri,
+        grant_type: 'authorization_code',
+        client_id: this.clientId,
+        code_verifier: this.codeVerifier
+      });
+      this.http
+        .post<SpotifyAuthToken>(
+          'https://accounts.spotify.com/api/token',
+          body,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            }
+          }
+        )
+        .subscribe((authToken) => {
+          this.setAuthToken(authToken);
+        });
+    }
+  }
+
+  setAuthToken(authToken: SpotifyAuthToken) {
     this.authToken = authToken;
   }
 
   authHeader() {
     return {
-      Authorization: `Bearer ${this.authToken}`
+      Authorization: `Bearer ${this.authToken.access_token}`
     };
   }
 
@@ -33,6 +97,18 @@ export class SpotifyApiService {
       }
     );
   }
+
+  refreshAuthToken() {
+    // TODO
+  }
+}
+
+interface SpotifyAuthToken {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
 }
 
 export interface SpotifyArtistImage {
