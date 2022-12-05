@@ -14,7 +14,6 @@ todo:
 
 12/4/22:
 In progress:
-- brainstorm components skeleton
 - test graph library
   - maybe can use test data?
   - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
@@ -37,6 +36,7 @@ App services:
 Finished:
 - start angular project setup
   - set up typescript linting
+- brainstorm components skeleton
 
 
 

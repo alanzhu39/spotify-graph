@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SpotifyApiService {
-  private authToken: string = '';
+  private authToken: string;
 
   constructor(private readonly http: HttpClient) {}
 
