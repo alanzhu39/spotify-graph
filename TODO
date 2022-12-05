@@ -1,22 +1,26 @@
 TODO:
 
 todo:
-- start angular project setup
-  - brainstorm components skeleton
-  - set up typescript linting
-- not sure which of the two below to implement first
-  - implement spotify auth flow so we can start getting data
-  - test graph library
-    - maybe can use test data?
-    - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
+- how to get graph data without rate limiting
+- make graph and UI pretty
 - azure static web app deployment
 - readme
 
 12/4/22:
 In progress:
-- test graph library
-  - maybe can use test data?
-  - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
+- spotify access token refresh
+
+Reflections:
+- highly productive day today, went from project initialization to already 50% working in one day
+- spotify auth flow was hella aids cuz of the different string encoding stuff
+  - also doing the hashing was not easy, but esp the encoding breaking the libraries was lame
+  - apis themselves working nicely
+  - need to do access token refresh
+- graph library turned out to be more or less plug and play, hope it will be robust enough for the desired features
+  - need to make it look pretty
+  - need to figure out grouping
+  - need to see if it can handle the full data amounts (from me is prob like >2k artists)
+- had some more practice with angular and observables, honestly seems kinda cringe
 
 App components:
 - menu-bar
@@ -34,6 +38,11 @@ App services:
     - graph service requests will be automatically authorized
 
 Finished:
+- spotify api requests working
+- spotify auth flow w pkce challenge
+- test graph library
+  - maybe can use test data?
+  - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
 - start angular project setup
   - set up typescript linting
 - brainstorm components skeleton
