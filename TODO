@@ -19,6 +19,21 @@ In progress:
   - maybe can use test data?
   - yes, I think can generate data first before doing full spotify api integration by just downloading json responses from docs for my data
 
+App components:
+- menu-bar
+- graph
+- auth-overlay
+
+App services:
+- auth service
+  - handles auth redirect and auth callback (routing)
+- graph service
+- spotify api service
+  - wrapper for spotify api requests
+  - include the auth token state here
+    - auth service puts token here
+    - graph service requests will be automatically authorized
+
 Finished:
 - start angular project setup
   - set up typescript linting
