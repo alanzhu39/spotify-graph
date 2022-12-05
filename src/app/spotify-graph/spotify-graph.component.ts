@@ -41,6 +41,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // this.drawGraph();
+    // this.graphService.populateGraph();
+    this.drawGraph();
   }
 }

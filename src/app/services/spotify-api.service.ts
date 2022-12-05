@@ -19,6 +19,8 @@ export class SpotifyApiService {
     if (state != null) this.state = state;
     const codeVerifier = window.localStorage.getItem('AUTH_CODE_VERIFIER');
     if (codeVerifier != null) this.codeVerifier = codeVerifier;
+    const authToken = window.localStorage.getItem('AUTH_TOKEN');
+    if (authToken != null) this.authToken = { ...JSON.parse(authToken) };
   }
 
   authRedirect() {
@@ -69,12 +71,14 @@ export class SpotifyApiService {
         )
         .subscribe((authToken) => {
           this.setAuthToken(authToken);
+          window.location.replace(this.siteUrl);
         });
     }
   }
 
   setAuthToken(authToken: SpotifyAuthToken) {
     this.authToken = authToken;
+    window.localStorage.setItem('AUTH_TOKEN', JSON.stringify(this.authToken));
   }
 
   authHeader() {
@@ -83,14 +87,19 @@ export class SpotifyApiService {
     };
   }
 
-  getSavedTracks() {
+  getSavedTracks(limit: number = 20, offset: number = 0) {
     // Wrap spotify saved tracks endpoint
-    // Include option for pagination
+    return this.http.get<{ items: SpotifySavedTrack[] }>(
+      `https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,
+      {
+        headers: this.authHeader()
+      }
+    );
   }
 
   getRelatedArtists(artistId: string) {
     // Wrap spotify related artists endpoint
-    this.http.get<{ artists: SpotifyArtist[] }>(
+    return this.http.get<{ artists: SpotifyArtist[] }>(
       `https://api.spotify.com/v1/artists/${artistId}/related-artists`,
       {
         headers: this.authHeader()
@@ -120,5 +129,13 @@ export interface SpotifyArtistImage {
 export interface SpotifyArtist {
   id: string;
   name: string;
-  images: SpotifyArtistImage[];
+  images?: SpotifyArtistImage[];
+}
+
+export interface SpotifySavedTrack {
+  track: SpotifyTrack;
+}
+
+export interface SpotifyTrack {
+  artists: SpotifyArtist[];
 }
