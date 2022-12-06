@@ -23,6 +23,10 @@ export class SpotifyApiService {
     if (authToken != null) this.authToken = { ...JSON.parse(authToken) };
   }
 
+  isLoggedIn() {
+    return this.authToken !== undefined;
+  }
+
   authRedirect() {
     this.state = generateRandomString(16);
     this.codeVerifier = generateRandomString(64);

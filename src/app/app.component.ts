@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SpotifyApiService } from './services/spotify-api.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'spotify-graph';
+
+  isLoggedIn: boolean = false;
+
+  constructor(private readonly apiService: SpotifyApiService) {
+    this.isLoggedIn = apiService.isLoggedIn();
+  }
 }

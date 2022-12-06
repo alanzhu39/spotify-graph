@@ -23,6 +23,7 @@ export class SpotifyGraphComponent {
   private readonly edges: DataSet<Edge> = new DataSet();
   readonly artists: Set<string> = new Set();
   private readonly connections: Set<string> = new Set();
+  showDialog: boolean = true;
   isLoading: boolean = false;
   error: boolean = false;
   counter: number = 1;
@@ -63,18 +64,18 @@ export class SpotifyGraphComponent {
           color: 'lightgray'
         },
         width: 2
-      },
-      physics: {
-        forceAtlas2Based: {
-          gravitationalConstant: -26,
-          centralGravity: 0.005,
-          springLength: 230,
-          springConstant: 0.18
-        },
-        maxVelocity: 146,
-        solver: 'forceAtlas2Based',
-        timestep: 0.35,
-        stabilization: { iterations: 150 }
+        // },
+        // physics: {
+        //   forceAtlas2Based: {
+        //     gravitationalConstant: -26,
+        //     centralGravity: 0.005,
+        //     springLength: 230,
+        //     springConstant: 0.18
+        //   },
+        //   maxVelocity: 146,
+        //   solver: 'forceAtlas2Based',
+        //   timestep: 0.35,
+        //   stabilization: { iterations: 150 }
       }
     };
     this.networkInstance = new Network(container, data, options);
@@ -173,5 +174,6 @@ export class SpotifyGraphComponent {
         });
     }
     this.isLoading = false;
+    this.showDialog = false;
   }
 }

@@ -1,7 +1,7 @@
-<div id="app-container">
+<div id="app-component-container">
   <app-menu-bar></app-menu-bar>
 
-  <app-spotify-auth></app-spotify-auth>
+  <app-spotify-auth *ngIf="!isLoggedIn"></app-spotify-auth>
 
-  <app-spotify-graph></app-spotify-graph>
+  <app-spotify-graph *ngIf="isLoggedIn"></app-spotify-graph>
 </div>

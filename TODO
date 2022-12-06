@@ -1,7 +1,6 @@
 TODO:
 
 todo:
-- make graph and UI pretty
 - use env variables
 - deployment
 - readme
@@ -9,11 +8,12 @@ todo:
 
 12/5/22:
 In progress:
-- spotify access token refresh
+- make graph and UI pretty
 - load testing, making it look pretty
   - should we remove low degree nodes?
 
 Finished:
+- spotify access token refresh
 - how to get graph data without rate limiting
   - adding timeouts
 - moved graph service into graph component
