@@ -8,10 +8,4 @@ import { SpotifyApiService } from './services/spotify-api.service';
 })
 export class AppComponent {
   title = 'spotify-graph';
-
-  isLoggedIn: boolean = false;
-
-  constructor(private readonly apiService: SpotifyApiService) {
-    this.isLoggedIn = apiService.isLoggedIn();
-  }
 }

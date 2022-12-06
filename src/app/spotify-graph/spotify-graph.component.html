@@ -1,19 +1,31 @@
-<div *ngIf="showDialog" id="graph-dialog">
-  <!-- Build graph button -->
-  <button (click)="buildGraph()" id="build-graph-button">Build graph</button>
+<div *ngIf="showDialog" id="dialog-background">
+  <div id="dialog-container">
+    <app-spotify-auth *ngIf="!isLoggedIn"></app-spotify-auth>
 
-  <!-- Loading message -->
-  <div *ngIf="isLoading">
-    <span>Building graph...</span>
-    <span
-      >Time remaining
-      {{ (artists.size - counter) / 10 | number : '1.0-0' }} seconds</span
-    >
-  </div>
+    <div *ngIf="isLoggedIn">
+      <!-- Build graph button -->
+      <button
+        *ngIf="!(isLoading || error)"
+        (click)="buildGraph()"
+        class="app-button"
+        id="build-graph-button"
+      >
+        Build graph
+      </button>
 
-  <!-- Error message -->
-  <div *ngIf="error">
-    There was an error building the graph. Please try again.
+      <div *ngIf="isLoading || error" id="dialog-message">
+        <!-- Loading message -->
+        <div *ngIf="isLoading">
+          Building graph... Time remaining
+          {{ (artists.size - counter) / 10 | number : '1.0-0' }} seconds
+        </div>
+
+        <!-- Error message -->
+        <div *ngIf="!isLoading && error">
+          There was an error building the graph. Please try again.
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

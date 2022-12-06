@@ -23,12 +23,15 @@ export class SpotifyGraphComponent {
   private readonly edges: DataSet<Edge> = new DataSet();
   readonly artists: Set<string> = new Set();
   private readonly connections: Set<string> = new Set();
+  isLoggedIn: boolean = false;
   showDialog: boolean = true;
   isLoading: boolean = false;
   error: boolean = false;
   counter: number = 1;
 
-  constructor(private readonly apiService: SpotifyApiService) {}
+  constructor(private readonly apiService: SpotifyApiService) {
+    this.isLoggedIn = apiService.isLoggedIn();
+  }
 
   buildGraph() {
     this.clearGraph();
@@ -48,6 +51,7 @@ export class SpotifyGraphComponent {
       edges: this.edges
     };
     const options = {
+      autoResize: false,
       nodes: {
         borderWidth: 4,
         shape: 'dot',

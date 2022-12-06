@@ -1,6 +1,7 @@
 TODO:
 
 todo:
+- change artist size by how many songs are saved?
 - use env variables
 - deployment
 - readme
