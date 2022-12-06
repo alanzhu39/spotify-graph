@@ -1,2 +1,10 @@
 <p>spotify-graph works!</p>
+<button (click)="buildGraph()">Build graph</button>
+<div *ngIf="isLoading">
+  <span>Building graph...</span>
+  <span
+    >Time remaining
+    {{ (artists.size - counter) / 10 | number : '1.0-0' }} seconds</span
+  >
+</div>
 <div id="spotify-network" #network></div>

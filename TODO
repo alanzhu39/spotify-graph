@@ -1,10 +1,16 @@
 TODO:
 
 todo:
-- how to get graph data without rate limiting
 - make graph and UI pretty
 - azure static web app deployment
 - readme
+
+12/5/22:
+In progress:
+- how to get graph data without rate limiting
+- spotify access token refresh
+
+
 
 12/4/22:
 In progress:

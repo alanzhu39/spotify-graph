@@ -97,6 +97,16 @@ export class SpotifyApiService {
     );
   }
 
+  getArtists(artistIds: string[]) {
+    // Wrap spotify related artists endpoint
+    return this.http.get<{ artists: SpotifyArtist[] }>(
+      `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
+      {
+        headers: this.authHeader()
+      }
+    );
+  }
+
   getRelatedArtists(artistId: string) {
     // Wrap spotify related artists endpoint
     return this.http.get<{ artists: SpotifyArtist[] }>(

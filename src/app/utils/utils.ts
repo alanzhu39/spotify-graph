@@ -26,3 +26,7 @@ export function generateCodeChallenge(codeVerifier: string) {
   const hash = sha256(new TextEncoder().encode(codeVerifier));
   return base64UrlEncode(hash);
 }
+
+export async function delay(timeout: number) {
+  return await new Promise((resolve) => setTimeout(resolve, timeout));
+}

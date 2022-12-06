@@ -1,28 +1,66 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Network, DataSet } from 'vis';
-import { SpotifyGraphService } from '../services/spotify-graph.service';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Network, DataSet, Node, Edge } from 'vis';
+import {
+  SpotifyApiService,
+  SpotifyArtist,
+  SpotifySavedTrack
+} from '../services/spotify-api.service';
+import { delay } from '../utils/utils';
 
 @Component({
   selector: 'app-spotify-graph',
   templateUrl: './spotify-graph.component.html',
   styleUrls: ['./spotify-graph.component.css']
 })
-export class SpotifyGraphComponent implements AfterViewInit {
+export class SpotifyGraphComponent {
   @ViewChild('network') el: ElementRef;
   private networkInstance: any;
 
-  constructor(private readonly graphService: SpotifyGraphService) {}
+  private readonly MAX_NODES: number = 50;
+
+  private readonly nodes: DataSet<Node> = new DataSet();
+  private readonly edges: DataSet<Edge> = new DataSet();
+  readonly artists: Set<string> = new Set();
+  private readonly connections: Set<string> = new Set();
+  isLoading: boolean = false;
+  counter: number = 1;
+
+  constructor(private readonly apiService: SpotifyApiService) {}
+
+  buildGraph() {
+    this.clearGraph();
+    this.populateGraph();
+    this.drawGraph();
+  }
+
+  populateGraph() {
+    this.isLoading = true;
+    this.getArtists();
+  }
 
   drawGraph() {
     const container = this.el.nativeElement;
     const data = {
-      nodes: this.graphService.getNodes(),
-      edges: this.graphService.getEdges()
+      nodes: this.nodes,
+      edges: this.edges
     };
     const options = {
       nodes: {
+        borderWidth: 4,
         shape: 'dot',
-        size: 16
+        size: 30,
+        color: {
+          border: '#222222',
+          background: '#666666'
+        },
+        font: { color: '#eeeeee' }
+      },
+      edges: {
+        color: {
+          color: 'lightgray',
+          inherit: 'false'
+        },
+        width: 2
       },
       physics: {
         forceAtlas2Based: {
@@ -37,11 +75,82 @@ export class SpotifyGraphComponent implements AfterViewInit {
         stabilization: { iterations: 150 }
       }
     };
-    this.networkInstance = new Network(container, data, {});
+    this.networkInstance = new Network(container, data, options);
   }
 
-  ngAfterViewInit() {
-    // this.graphService.populateGraph();
-    this.drawGraph();
+  clearGraph() {
+    this.nodes.clear();
+    this.edges.clear();
+    this.artists.clear();
+    this.edges.clear();
+  }
+
+  getArtists(offset: number = 0) {
+    const limit = 50;
+    // Get saved tracks
+    this.apiService
+      .getSavedTracks(limit, offset)
+      .subscribe((data: { items: SpotifySavedTrack[] }) => {
+        // Get artists from saved tracks
+        const artistIds: string[] = [];
+        data.items.forEach((savedTrack: SpotifySavedTrack) => {
+          savedTrack.track.artists.forEach((artist: SpotifyArtist) => {
+            if (!this.artists.has(artist.id)) {
+              this.artists.add(artist.id);
+              artistIds.push(artist.id);
+            }
+          });
+        });
+
+        // Get artist images
+        for (let i = 0; i < artistIds.length; i += 50) {
+          this.apiService
+            .getArtists(artistIds.slice(i, i + 50))
+            .subscribe((data: { artists: SpotifyArtist[] }) => {
+              data.artists.forEach((artist: SpotifyArtist) => {
+                const artistImage =
+                  artist.images !== undefined && artist.images.length >= 3
+                    ? artist.images[2]
+                    : undefined;
+                this.nodes.update({
+                  id: artist.id,
+                  label: artist.name,
+                  shape: 'circularImage',
+                  image: artistImage?.url
+                });
+              });
+            });
+        }
+
+        if (data.items.length === limit && offset + limit < this.MAX_NODES) {
+          // Use timeout to prevent rate-limiting
+          setTimeout(() => this.getArtists(offset + limit), 100);
+        } else {
+          void this.getConnections();
+        }
+      });
+  }
+
+  async getConnections() {
+    // Get related artists
+    this.counter = 1;
+    for (const artistId of this.artists) {
+      if (this.counter++ % 10 === 0) await delay(1000); // wait 5 seconds every 50 requests to prevent rate limiting
+      this.apiService
+        .getRelatedArtists(artistId)
+        .subscribe((data: { artists: SpotifyArtist[] }) => {
+          data.artists.forEach((artist: SpotifyArtist) => {
+            const edgeStr =
+              artistId < artist.id
+                ? `${artistId}:${artist.id}`
+                : `${artist.id}:${artistId}`;
+            if (this.artists.has(artist.id) && !this.connections.has(edgeStr)) {
+              this.connections.add(edgeStr);
+              this.edges.add({ from: artistId, to: artist.id });
+            }
+          });
+        });
+    }
+    this.isLoading = false;
   }
 }
