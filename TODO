@@ -2,13 +2,24 @@ TODO:
 
 todo:
 - make graph and UI pretty
-- azure static web app deployment
+- use env variables
+- deployment
 - readme
+- graph playlists
 
 12/5/22:
 In progress:
-- how to get graph data without rate limiting
 - spotify access token refresh
+- load testing, making it look pretty
+  - should we remove low degree nodes?
+
+Finished:
+- how to get graph data without rate limiting
+  - adding timeouts
+- moved graph service into graph component
+  - don't really need the separate service
+  - also lets us do loading and time remaining and stuff
+- images work pretty easily
 
 
 

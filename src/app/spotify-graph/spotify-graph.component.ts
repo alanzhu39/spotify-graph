@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Network, DataSet, Node, Edge } from 'vis';
 import {
@@ -16,13 +17,14 @@ export class SpotifyGraphComponent {
   @ViewChild('network') el: ElementRef;
   private networkInstance: any;
 
-  private readonly MAX_NODES: number = 50;
+  private readonly MAX_NODES: number = 100;
 
   private readonly nodes: DataSet<Node> = new DataSet();
   private readonly edges: DataSet<Edge> = new DataSet();
   readonly artists: Set<string> = new Set();
   private readonly connections: Set<string> = new Set();
   isLoading: boolean = false;
+  error: boolean = false;
   counter: number = 1;
 
   constructor(private readonly apiService: SpotifyApiService) {}
@@ -51,14 +53,14 @@ export class SpotifyGraphComponent {
         size: 30,
         color: {
           border: '#222222',
-          background: '#666666'
+          background: '#666666',
+          highlight: 'lightgray'
         },
         font: { color: '#eeeeee' }
       },
       edges: {
         color: {
-          color: 'lightgray',
-          inherit: 'false'
+          color: 'lightgray'
         },
         width: 2
       },
@@ -88,9 +90,8 @@ export class SpotifyGraphComponent {
   getArtists(offset: number = 0) {
     const limit = 50;
     // Get saved tracks
-    this.apiService
-      .getSavedTracks(limit, offset)
-      .subscribe((data: { items: SpotifySavedTrack[] }) => {
+    this.apiService.getSavedTracks(limit, offset).subscribe(
+      (data: { items: SpotifySavedTrack[] }) => {
         // Get artists from saved tracks
         const artistIds: string[] = [];
         data.items.forEach((savedTrack: SpotifySavedTrack) => {
@@ -112,12 +113,14 @@ export class SpotifyGraphComponent {
                   artist.images !== undefined && artist.images.length >= 3
                     ? artist.images[2]
                     : undefined;
-                this.nodes.update({
-                  id: artist.id,
-                  label: artist.name,
-                  shape: 'circularImage',
-                  image: artistImage?.url
-                });
+                if (artistImage !== undefined) {
+                  this.nodes.update({
+                    id: artist.id,
+                    label: artist.name,
+                    shape: 'circularImage',
+                    image: artistImage?.url
+                  });
+                }
               });
             });
         }
@@ -128,7 +131,14 @@ export class SpotifyGraphComponent {
         } else {
           void this.getConnections();
         }
-      });
+      },
+      (error) => {
+        this.apiService.handleApiError(error);
+        this.clearGraph();
+        this.error = true;
+        this.isLoading = false;
+      }
+    );
   }
 
   async getConnections() {
@@ -139,16 +149,27 @@ export class SpotifyGraphComponent {
       this.apiService
         .getRelatedArtists(artistId)
         .subscribe((data: { artists: SpotifyArtist[] }) => {
-          data.artists.forEach((artist: SpotifyArtist) => {
-            const edgeStr =
-              artistId < artist.id
-                ? `${artistId}:${artist.id}`
-                : `${artist.id}:${artistId}`;
-            if (this.artists.has(artist.id) && !this.connections.has(edgeStr)) {
-              this.connections.add(edgeStr);
-              this.edges.add({ from: artistId, to: artist.id });
+          data.artists.forEach(
+            (artist: SpotifyArtist) => {
+              const edgeStr =
+                artistId < artist.id
+                  ? `${artistId}:${artist.id}`
+                  : `${artist.id}:${artistId}`;
+              if (
+                this.artists.has(artist.id) &&
+                !this.connections.has(edgeStr)
+              ) {
+                this.connections.add(edgeStr);
+                this.edges.add({ from: artistId, to: artist.id });
+              }
+            },
+            (error: HttpErrorResponse) => {
+              this.apiService.handleApiError(error);
+              this.clearGraph();
+              this.error = true;
+              this.isLoading = false;
             }
-          });
+          );
         });
     }
     this.isLoading = false;

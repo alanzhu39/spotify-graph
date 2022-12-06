@@ -7,4 +7,7 @@
     {{ (artists.size - counter) / 10 | number : '1.0-0' }} seconds</span
   >
 </div>
+<div *ngIf="error">
+  There was an error building the graph. Please try again.
+</div>
 <div id="spotify-network" #network></div>

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { stringify } from 'querystring';
 import { generateCodeChallenge, generateRandomString } from '../utils/utils';
@@ -117,8 +117,27 @@ export class SpotifyApiService {
     );
   }
 
+  handleApiError(error: HttpErrorResponse) {
+    if (error.status === 401) {
+      this.refreshAuthToken();
+    }
+  }
+
   refreshAuthToken() {
-    // TODO
+    const body = new URLSearchParams({
+      refresh_token: this.authToken.refresh_token,
+      grant_type: 'refresh_token',
+      client_id: this.clientId
+    });
+    this.http
+      .post<SpotifyAuthToken>('https://accounts.spotify.com/api/token', body, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
+      })
+      .subscribe((authToken) => {
+        this.setAuthToken(authToken);
+      });
   }
 }
 
