@@ -22,7 +22,6 @@ export class SpotifyApiService {
     if (codeVerifier != null) this.codeVerifier = codeVerifier;
     const authToken = window.localStorage.getItem('AUTH_TOKEN');
     if (authToken != null) this.authToken = { ...JSON.parse(authToken) };
-    console.log(this.siteUrl);
   }
 
   isLoggedIn() {

@@ -22,7 +22,8 @@
         <!-- Loading message -->
         <div *ngIf="isLoading">
           Building graph... Time remaining
-          {{ (artists.size - counter) / 10 | number : '1.0-0' }} seconds
+          {{ math.max(timeRemaining, 0) | number : '1.0-0' }}
+          seconds
         </div>
 
         <!-- Error message -->

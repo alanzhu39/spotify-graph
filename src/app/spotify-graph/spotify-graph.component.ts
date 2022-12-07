@@ -21,19 +21,30 @@ import { delay, getDefaultData } from '../utils/utils';
 })
 export class SpotifyGraphComponent implements AfterViewInit {
   @ViewChild('network') el: ElementRef;
-  private networkInstance: any;
+  private networkInstance: Network;
 
-  private readonly MAX_NODES: number = 500;
+  private readonly MAX_NODES = 1000;
+  readonly REQS_PER_SEC = 50;
+  readonly math = Math;
 
-  private readonly nodes: DataSet<Node> = new DataSet();
-  private readonly edges: DataSet<Edge> = new DataSet();
-  readonly artists: Set<string> = new Set();
-  private readonly connections: Set<string> = new Set();
-  isLoggedIn: boolean = false;
-  showDialog: boolean = true;
-  isLoading: boolean = false;
-  error: boolean = false;
-  counter: number = 1;
+  // added seconds per 100 nodes to stabilize graph
+  readonly GRAPH_LATENCY = 3;
+
+  private readonly nodes = new DataSet<Node>(undefined, {
+    queue: true
+  });
+
+  private readonly edges = new DataSet<Edge>(undefined, {
+    queue: true
+  });
+
+  readonly artists = new Set<string>();
+  private readonly connections = new Set<string>();
+  isLoggedIn = false;
+  showDialog = true;
+  isLoading = false;
+  error = false;
+  timeRemaining = 0;
 
   constructor(private readonly apiService: SpotifyApiService) {
     this.isLoggedIn = apiService.isLoggedIn();
@@ -64,7 +75,6 @@ export class SpotifyGraphComponent implements AfterViewInit {
   }
 
   drawGraph(isDefault: boolean = false) {
-    const container = this.el.nativeElement;
     const data = isDefault
       ? getDefaultData()
       : {
@@ -86,24 +96,23 @@ export class SpotifyGraphComponent implements AfterViewInit {
       },
       edges: {
         color: {
-          color: 'lightgray'
+          color: 'gray',
+          highlight: 'lightgray'
         },
         width: 2
-        // },
-        // physics: {
-        //   forceAtlas2Based: {
-        //     gravitationalConstant: -26,
-        //     centralGravity: 0.005,
-        //     springLength: 230,
-        //     springConstant: 0.18
-        //   },
-        //   maxVelocity: 146,
-        //   solver: 'forceAtlas2Based',
-        //   timestep: 0.35,
-        //   stabilization: { iterations: 150 }
+      },
+      physics: {
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -26,
+          centralGravity: 0.003,
+          springLength: 100,
+          springConstant: 0.18
+        },
+        stabilization: { iterations: 150 }
       }
     };
-    this.networkInstance = new Network(container, data, options);
+    this.networkInstance = new Network(this.el.nativeElement, data, options);
   }
 
   clearGraph() {
@@ -116,8 +125,8 @@ export class SpotifyGraphComponent implements AfterViewInit {
   getArtists(offset: number = 0) {
     const limit = 50;
     // Get saved tracks
-    this.apiService.getSavedTracks(limit, offset).subscribe(
-      (data: { items: SpotifySavedTrack[] }) => {
+    this.apiService.getSavedTracks(limit, offset).subscribe({
+      next: (data: { items: SpotifySavedTrack[] }) => {
         // Get artists from saved tracks
         const artistIds: string[] = [];
         data.items.forEach((savedTrack: SpotifySavedTrack) => {
@@ -140,12 +149,14 @@ export class SpotifyGraphComponent implements AfterViewInit {
                     ? artist.images[2]
                     : undefined;
                 if (artistImage !== undefined) {
-                  this.nodes.add({
+                  this.nodes.update({
                     id: artist.id,
                     label: artist.name,
                     shape: 'circularImage',
                     image: artistImage?.url
                   });
+                  this.timeRemaining +=
+                    1 / this.REQS_PER_SEC + this.GRAPH_LATENCY / 100;
                 } else {
                   this.artists.delete(artistIds[i]);
                 }
@@ -160,47 +171,53 @@ export class SpotifyGraphComponent implements AfterViewInit {
           void this.getConnections();
         }
       },
-      (error) => {
+      error: (error) => {
         this.apiService.handleApiError(error);
         this.clearGraph();
         this.error = true;
         this.isLoading = false;
       }
-    );
+    });
   }
 
   async getConnections() {
     // Get related artists
-    this.counter = 1;
+    let counter = 1;
     for (const artistId of this.artists) {
-      if (this.counter++ % 10 === 0) await delay(1000); // wait 5 seconds every 50 requests to prevent rate limiting
-      this.apiService
-        .getRelatedArtists(artistId)
-        .subscribe((data: { artists: SpotifyArtist[] }) => {
-          data.artists.forEach(
-            (artist: SpotifyArtist) => {
-              const edgeStr =
-                artistId < artist.id
-                  ? `${artistId}:${artist.id}`
-                  : `${artist.id}:${artistId}`;
-              if (
-                this.artists.has(artist.id) &&
-                !this.connections.has(edgeStr)
-              ) {
-                this.connections.add(edgeStr);
-                this.edges.add({ from: artistId, to: artist.id });
-              }
-            },
-            (error: HttpErrorResponse) => {
-              this.apiService.handleApiError(error);
-              this.clearGraph();
-              this.error = true;
-              this.isLoading = false;
+      if (counter++ % this.REQS_PER_SEC === 0) {
+        this.timeRemaining -= 1;
+        await delay(1000);
+      }
+      this.apiService.getRelatedArtists(artistId).subscribe({
+        next: (data: { artists: SpotifyArtist[] }) => {
+          data.artists.forEach((artist: SpotifyArtist) => {
+            const edgeStr =
+              artistId < artist.id
+                ? `${artistId}:${artist.id}`
+                : `${artist.id}:${artistId}`;
+            if (this.artists.has(artist.id) && !this.connections.has(edgeStr)) {
+              this.connections.add(edgeStr);
+              this.edges.add({ from: artistId, to: artist.id });
             }
-          );
-        });
+          });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.apiService.handleApiError(error);
+          this.clearGraph();
+          this.error = true;
+          this.isLoading = false;
+        }
+      });
     }
-    this.isLoading = false;
-    this.showDialog = false;
+    this.nodes.flush();
+    this.edges.flush();
+    const interval = setInterval(() => (this.timeRemaining -= 1), 1000);
+    this.networkInstance.stabilize(200);
+    this.networkInstance.once('stabilizationIterationsDone', () => {
+      this.isLoading = false;
+      this.showDialog = false;
+      clearInterval(interval);
+      this.timeRemaining = 0;
+    });
   }
 }

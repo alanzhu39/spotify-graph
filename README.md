@@ -125,6 +125,7 @@ To get a local copy up and running follow these simple example steps.
 
 - [ ] Graphs based on playlists
 - [ ] Node/edge weighting based on frequency of artist
+- [ ] Better graph grouping/clustering visualization
 - [ ] More graph customization options
 
 See the [open issues](https://github.com/alanzhu39/spotify-graph/issues) for a full list of proposed features (and known issues).
