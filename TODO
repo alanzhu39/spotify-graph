@@ -9,15 +9,21 @@ todo:
 
 12/5/22:
 In progress:
+- menu bar
+  - github logo
+  - colors
+  - about page?
+- base background graph
 - make graph and UI pretty
-  - maybe try to get some better color palettes, more colorful or smth
   - want to make menu bar more compelling, can def upgrade from gomoku fe
-  - try to look up some examples
-  - also update fonts
 - load testing, making it look pretty
   - should we remove low degree nodes?
 
 Finished:
+- UI work
+  - maybe try to get some better color palettes, more colorful or smth
+  - try to look up some examples
+  - also update fonts
 - working on html templates/structure and css styles
 - spotify access token refresh
 - how to get graph data without rate limiting

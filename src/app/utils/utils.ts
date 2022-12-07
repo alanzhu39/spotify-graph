@@ -1,4 +1,7 @@
 import sha256 from 'fast-sha256';
+import { Node, Edge } from 'vis';
+import defaultNodes from '../../assets/default-nodes.json';
+import defaultEdges from '../../assets/default-edges.json';
 
 export function generateRandomString(length: number) {
   const chars =
@@ -29,4 +32,13 @@ export function generateCodeChallenge(codeVerifier: string) {
 
 export async function delay(timeout: number) {
   return await new Promise((resolve) => setTimeout(resolve, timeout));
+}
+
+export function getDefaultData() {
+  const nodes: Node[] = defaultNodes;
+  const edges: Edge[] = defaultEdges;
+  return {
+    nodes,
+    edges
+  };
 }

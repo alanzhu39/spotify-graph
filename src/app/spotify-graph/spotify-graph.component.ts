@@ -1,19 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Network, DataSet, Node, Edge } from 'vis';
 import {
   SpotifyApiService,
   SpotifyArtist,
   SpotifySavedTrack
 } from '../services/spotify-api.service';
-import { delay } from '../utils/utils';
+import { delay, getDefaultData } from '../utils/utils';
 
 @Component({
   selector: 'app-spotify-graph',
   templateUrl: './spotify-graph.component.html',
   styleUrls: ['./spotify-graph.component.css']
 })
-export class SpotifyGraphComponent {
+export class SpotifyGraphComponent implements AfterViewInit {
   @ViewChild('network') el: ElementRef;
   private networkInstance: any;
 
@@ -33,6 +33,10 @@ export class SpotifyGraphComponent {
     this.isLoggedIn = apiService.isLoggedIn();
   }
 
+  ngAfterViewInit() {
+    if (this.artists.size === 0) this.drawGraph(true);
+  }
+
   buildGraph() {
     this.clearGraph();
     this.populateGraph();
@@ -44,12 +48,14 @@ export class SpotifyGraphComponent {
     this.getArtists();
   }
 
-  drawGraph() {
+  drawGraph(isDefault: boolean = false) {
     const container = this.el.nativeElement;
-    const data = {
-      nodes: this.nodes,
-      edges: this.edges
-    };
+    const data = isDefault
+      ? getDefaultData()
+      : {
+          nodes: this.nodes,
+          edges: this.edges
+        };
     const options = {
       autoResize: false,
       nodes: {
@@ -119,12 +125,14 @@ export class SpotifyGraphComponent {
                     ? artist.images[2]
                     : undefined;
                 if (artistImage !== undefined) {
-                  this.nodes.update({
+                  this.nodes.add({
                     id: artist.id,
                     label: artist.name,
                     shape: 'circularImage',
                     image: artistImage?.url
                   });
+                } else {
+                  this.artists.delete(artistIds[i]);
                 }
               });
             });
