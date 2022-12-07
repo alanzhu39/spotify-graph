@@ -8,12 +8,12 @@ todo:
 
 12/5/22:
 In progress:
-- use env variables
-- update favico
 - load testing, making it look pretty
   - should we remove low degree nodes?
 
 Finished:
+- update favico
+- use env variables
 - add logout button
 - base background graph
 - UI work

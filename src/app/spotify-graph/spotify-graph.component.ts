@@ -23,7 +23,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   @ViewChild('network') el: ElementRef;
   private networkInstance: any;
 
-  private readonly MAX_NODES: number = 100;
+  private readonly MAX_NODES: number = 500;
 
   private readonly nodes: DataSet<Node> = new DataSet();
   private readonly edges: DataSet<Edge> = new DataSet();
