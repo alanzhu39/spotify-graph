@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { SpotifyApiService } from '../services/spotify-api.service';
 
 @Component({
@@ -7,6 +8,7 @@ import { SpotifyApiService } from '../services/spotify-api.service';
   styleUrls: ['./spotify-auth.component.css']
 })
 export class SpotifyAuthComponent implements OnInit {
+  private readonly siteUrl = environment.siteUrl;
   isLoading: boolean = false;
 
   constructor(private readonly apiService: SpotifyApiService) {}
@@ -30,6 +32,8 @@ export class SpotifyAuthComponent implements OnInit {
     if (code == null || state == null) {
       // TODO: update error handling
       console.error('auth callback failed');
+      this.isLoading = false;
+      window.location.replace(this.siteUrl);
     } else {
       this.apiService.authCallback(code, state);
     }

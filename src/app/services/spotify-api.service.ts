@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { stringify } from 'querystring';
-import { environment } from 'src/environment/environment';
+import { environment } from 'src/environments/environment';
 import { generateCodeChallenge, generateRandomString } from '../utils/utils';
 
 @Injectable({
@@ -22,6 +22,7 @@ export class SpotifyApiService {
     if (codeVerifier != null) this.codeVerifier = codeVerifier;
     const authToken = window.localStorage.getItem('AUTH_TOKEN');
     if (authToken != null) this.authToken = { ...JSON.parse(authToken) };
+    console.log(this.siteUrl);
   }
 
   isLoggedIn() {
