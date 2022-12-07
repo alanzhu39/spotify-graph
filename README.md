@@ -65,16 +65,14 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Spoti-graph Screen Shot][product-screenshot]](https://spoti-graph-d4441.web.app/)
 
 Spoti-graph is a tool that generates a graph of the artists in your Spotify library.
 Nodes in the graph are the artists from your saved songs.
 If two artists are related (as determined by Spotify's listening statistics), they'll have an edge between them.
 Once the graph is drawn, you'll likely see artists from similar genres or communities clustered together.
 
-Try it out and see what your listening network is like!
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `alanzhu39`, `spotify-graph`, `twitter_handle`, `alan-z-55b308138`, `email_client`, `email`, `Spoti-graph`, `project_description`
+Try it out and see what your listening graph is like!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -162,7 +160,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/alanzhu39) - alan.zhu39@gmail.com
+Alan Zhu - [@alanzhu39](https://twitter.com/alanzhu39) - alan.zhu39@gmail.com
 
 Project Link: [https://github.com/alanzhu39/spotify-graph](https://github.com/alanzhu39/spotify-graph)
 
