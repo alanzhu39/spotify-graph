@@ -8,6 +8,16 @@ todo:
 - change artist size by how many songs are saved?
 - graph playlists
 
+12/6/22:
+In progress:
+- making graph more efficient, so we can support more nodes
+  - added stabilization call here, need to update time remaining counter properly
+  - updated physics settings for forceAtlas2Based
+- size of artist based on number of tracks
+- Add dropdown of playlists to retrieve tracks from
+
+
+
 12/5/22:
 In progress:
 
