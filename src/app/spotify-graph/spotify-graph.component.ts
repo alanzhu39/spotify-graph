@@ -48,6 +48,10 @@ export class SpotifyGraphComponent implements AfterViewInit {
     if (this.artists.size === 0) this.drawGraph(true);
   }
 
+  logoutOfSpotify() {
+    this.apiService.authLogout();
+  }
+
   buildGraph() {
     this.clearGraph();
     this.populateGraph();

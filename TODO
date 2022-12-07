@@ -9,6 +9,7 @@ todo:
 
 12/5/22:
 In progress:
+- add logout button
 - update favico
 - load testing, making it look pretty
   - should we remove low degree nodes?

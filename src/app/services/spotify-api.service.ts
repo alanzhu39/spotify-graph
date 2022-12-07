@@ -27,6 +27,11 @@ export class SpotifyApiService {
     return this.authToken !== undefined;
   }
 
+  authLogout() {
+    window.localStorage.clear();
+    window.location.replace(this.siteUrl);
+  }
+
   authRedirect() {
     this.state = generateRandomString(16);
     this.codeVerifier = generateRandomString(64);

@@ -3,15 +3,20 @@
     <app-spotify-auth *ngIf="!isLoggedIn"></app-spotify-auth>
 
     <div *ngIf="isLoggedIn">
-      <!-- Build graph button -->
-      <button
-        *ngIf="!(isLoading || error)"
-        (click)="buildGraph()"
-        class="app-button"
-        id="build-graph-button"
-      >
-        Build graph
-      </button>
+      <div id="graph-button-container" *ngIf="!(isLoading || error)">
+        <!-- Build graph button -->
+        <button
+          (click)="buildGraph()"
+          class="app-button"
+          id="build-graph-button"
+        >
+          Build graph
+        </button>
+
+        <div id="logout-link" (click)="logoutOfSpotify()">
+          Logout of Spotify
+        </div>
+      </div>
 
       <div *ngIf="isLoading || error" id="dialog-message">
         <!-- Loading message -->

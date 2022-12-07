@@ -7,6 +7,8 @@ import { SpotifyApiService } from '../services/spotify-api.service';
   styleUrls: ['./spotify-auth.component.css']
 })
 export class SpotifyAuthComponent implements OnInit {
+  isLoading: boolean = false;
+
   constructor(private readonly apiService: SpotifyApiService) {}
 
   ngOnInit() {
@@ -21,6 +23,7 @@ export class SpotifyAuthComponent implements OnInit {
   }
 
   handleAuthCallback() {
+    this.isLoading = true;
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     const state = params.get('state');
