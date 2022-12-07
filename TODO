@@ -2,19 +2,19 @@ TODO:
 
 todo:
 - change artist size by how many songs are saved?
-- use env variables
 - deployment
 - readme
 - graph playlists
 
 12/5/22:
 In progress:
-- add logout button
+- use env variables
 - update favico
 - load testing, making it look pretty
   - should we remove low degree nodes?
 
 Finished:
+- add logout button
 - base background graph
 - UI work
   - adding hamburger about menu, feels super clean

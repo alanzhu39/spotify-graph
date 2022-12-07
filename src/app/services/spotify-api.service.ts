@@ -1,14 +1,15 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { stringify } from 'querystring';
+import { environment } from 'src/environment/environment';
 import { generateCodeChallenge, generateRandomString } from '../utils/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpotifyApiService {
-  private readonly siteUrl = 'http://localhost:4200';
-  private readonly clientId = '85b816ac845f4c718040ef7bddc92a64';
+  private readonly siteUrl = environment.siteUrl;
+  private readonly clientId = environment.clientId;
   private readonly redirectUri = `${this.siteUrl}/callback`;
   private state: string;
   private codeVerifier: string;
