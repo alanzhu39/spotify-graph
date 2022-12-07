@@ -172,6 +172,7 @@ Project Link: [https://github.com/alanzhu39/spotify-graph](https://github.com/al
 
 ## Acknowledgments
 
+- [Spotify APIs](https://developer.spotify.com/)
 - [Best README Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
