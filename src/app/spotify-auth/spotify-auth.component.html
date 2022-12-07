@@ -1,0 +1,12 @@
+<button
+  (click)="signInToSpotify()"
+  *ngIf="!isLoading"
+  class="app-button"
+  id="signin-button"
+>
+  Sign in to Spotify
+</button>
+
+<div id="loading-bar-spinner" class="spinner" *ngIf="isLoading">
+  <div class="spinner-icon"></div>
+</div>
