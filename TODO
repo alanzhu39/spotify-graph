@@ -10,9 +10,9 @@ todo:
 
 12/5/22:
 In progress:
-- checking github actions work
 
 Finished:
+- checking github actions work
 - readme
 - deployment
   - deploying to firebase hosting. free and easy to use? can also add custom domain later
