@@ -1,5 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild
+} from '@angular/core';
 import { Network, DataSet, Node, Edge } from 'vis';
 import {
   SpotifyApiService,
@@ -31,6 +37,11 @@ export class SpotifyGraphComponent implements AfterViewInit {
 
   constructor(private readonly apiService: SpotifyApiService) {
     this.isLoggedIn = apiService.isLoggedIn();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.networkInstance.redraw();
   }
 
   ngAfterViewInit() {
