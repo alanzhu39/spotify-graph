@@ -9,7 +9,7 @@ import { SpotifyApiService } from '../services/spotify-api.service';
 })
 export class SpotifyAuthComponent implements OnInit {
   private readonly siteUrl = environment.siteUrl;
-  isLoading = false;
+  isLoading: boolean = false;
 
   constructor(private readonly apiService: SpotifyApiService) {}
 

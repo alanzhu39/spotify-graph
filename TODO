@@ -10,11 +10,19 @@ todo:
 
 12/6/22:
 In progress:
+- adding options to use tracks from a playlist instead
+  - Add dropdown of playlists to retrieve tracks from
+- size of artist based on number of tracks
+
+Finished:
+- load testing
+  - update max nodes parameter: getting rate limiting at 1500 nodes, 39 reqs per second.
+  - should we remove low degree nodes?
+    - probably not, there aren't that many and they're nicely clustered
+    - might identify indie artists/your unique taste
 - making graph more efficient, so we can support more nodes
   - added stabilization call here, need to update time remaining counter properly
   - updated physics settings for forceAtlas2Based
-- size of artist based on number of tracks
-- Add dropdown of playlists to retrieve tracks from
 
 
 

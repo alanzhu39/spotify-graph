@@ -97,9 +97,19 @@ export class SpotifyApiService {
     };
   }
 
+  getPlaylists(limit: number = 20, offset: number = 0) {
+    // Wrap spotify get playlists endpoint
+    return this.http.get<{ items: SpotifyPlaylist[]; next: string | null }>(
+      `https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=${offset}`,
+      {
+        headers: this.authHeader()
+      }
+    );
+  }
+
   getSavedTracks(limit: number = 20, offset: number = 0) {
     // Wrap spotify saved tracks endpoint
-    return this.http.get<{ items: SpotifySavedTrack[] }>(
+    return this.http.get<{ items: SpotifySavedTrack[]; next: string | null }>(
       `https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,
       {
         headers: this.authHeader()
@@ -177,4 +187,9 @@ export interface SpotifySavedTrack {
 
 export interface SpotifyTrack {
   artists: SpotifyArtist[];
+}
+
+export interface SpotifyPlaylist {
+  id: string;
+  name: string;
 }

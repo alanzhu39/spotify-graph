@@ -10,6 +10,7 @@ import { Network, DataSet, Node, Edge } from 'vis';
 import {
   SpotifyApiService,
   SpotifyArtist,
+  SpotifyPlaylist,
   SpotifySavedTrack
 } from '../services/spotify-api.service';
 import { delay, getDefaultData } from '../utils/utils';
@@ -30,21 +31,24 @@ export class SpotifyGraphComponent implements AfterViewInit {
   // added seconds per 100 nodes to stabilize graph
   readonly GRAPH_LATENCY = 3;
 
-  private readonly nodes = new DataSet<Node>(undefined, {
+  private readonly nodes: DataSet<Node> = new DataSet([], {
     queue: true
   });
 
-  private readonly edges = new DataSet<Edge>(undefined, {
+  private readonly edges: DataSet<Edge> = new DataSet([], {
     queue: true
   });
 
-  readonly artists = new Set<string>();
-  private readonly connections = new Set<string>();
-  isLoggedIn = false;
-  showDialog = true;
-  isLoading = false;
-  error = false;
-  timeRemaining = 0;
+  readonly artists: Set<string> = new Set();
+  private readonly connections: Set<string> = new Set();
+  playlists: SpotifyPlaylist[] = [];
+
+  isLoggedIn: boolean = false;
+  showDialog: boolean = true;
+  playlistsLoading: boolean = true;
+  graphLoading: boolean = false;
+  error: boolean = false;
+  timeRemaining: number = 0;
 
   constructor(private readonly apiService: SpotifyApiService) {
     this.isLoggedIn = apiService.isLoggedIn();
@@ -56,6 +60,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.getPlaylists();
     if (this.artists.size === 0) this.drawGraph(true);
   }
 
@@ -70,7 +75,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   }
 
   populateGraph() {
-    this.isLoading = true;
+    this.graphLoading = true;
     this.getArtists();
   }
 
@@ -120,6 +125,26 @@ export class SpotifyGraphComponent implements AfterViewInit {
     this.edges.clear();
     this.artists.clear();
     this.edges.clear();
+  }
+
+  getPlaylists(offset: number = 0) {
+    const limit = 50;
+    // Get user playlists
+    this.apiService.getPlaylists(limit, offset).subscribe({
+      next: (data: { items: SpotifyPlaylist[]; next: string | null }) => {
+        this.playlists = this.playlists.concat(data.items);
+
+        if (data.next != null) {
+          this.getPlaylists(offset + limit);
+        } else {
+          this.playlistsLoading = false;
+        }
+      },
+      error: (error) => {
+        this.apiService.handleApiError(error);
+        this.playlistsLoading = false;
+      }
+    });
   }
 
   getArtists(offset: number = 0) {
@@ -175,7 +200,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
         this.apiService.handleApiError(error);
         this.clearGraph();
         this.error = true;
-        this.isLoading = false;
+        this.graphLoading = false;
       }
     });
   }
@@ -205,7 +230,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
           this.apiService.handleApiError(error);
           this.clearGraph();
           this.error = true;
-          this.isLoading = false;
+          this.graphLoading = false;
         }
       });
     }
@@ -214,7 +239,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
     const interval = setInterval(() => (this.timeRemaining -= 1), 1000);
     this.networkInstance.stabilize(200);
     this.networkInstance.once('stabilizationIterationsDone', () => {
-      this.isLoading = false;
+      this.graphLoading = false;
       this.showDialog = false;
       clearInterval(interval);
       this.timeRemaining = 0;

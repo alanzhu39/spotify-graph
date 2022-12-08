@@ -1,35 +1,66 @@
 <div *ngIf="showDialog" id="dialog-background">
   <div id="dialog-container">
+    <!-- Spotify auth component -->
     <app-spotify-auth *ngIf="!isLoggedIn"></app-spotify-auth>
 
+    <!-- Graph dialog -->
     <div *ngIf="isLoggedIn">
-      <div id="graph-button-container" *ngIf="!(isLoading || error)">
-        <!-- Build graph button -->
-        <button
-          (click)="buildGraph()"
-          class="app-button"
-          id="build-graph-button"
-        >
-          Build graph
-        </button>
+      <!-- Pre graph build -->
+      <div *ngIf="!graphLoading">
+        <!-- Dialog content -->
+        <div id="dialog-content">
+          <div id="playlists-content" *ngIf="!playlistsLoading; else elseBlock">
+            <!-- Playlist selection -->
+            <label for="playlist-select">Choose a playlist:</label>
 
+            <select name="playlists" id="playlist-select">
+              <option value="">--Please choose an option--</option>
+              <!-- TODO: playlist options -->
+            </select>
+            <br />
+
+            <!-- Build graph button -->
+            <button
+              (click)="buildGraph()"
+              class="app-button"
+              id="build-graph-button"
+            >
+              Build graph
+            </button>
+          </div>
+          <ng-template #elseBlock>
+            <!-- Loader -->
+            <div class="loading-bar-spinner">
+              <div id="graph-spinner" class="spinner-icon"></div>
+            </div>
+          </ng-template>
+
+          <!-- Error message -->
+          <span *ngIf="error">
+            <br />
+            There was an error building the graph. Please try again.
+          </span>
+        </div>
+        <!-- Logout link -->
         <div id="logout-link" (click)="logoutOfSpotify()">
           Logout of Spotify
         </div>
       </div>
 
-      <div *ngIf="isLoading || error" id="dialog-message">
+      <!-- Building graph -->
+      <div *ngIf="graphLoading" id="dialog-content">
         <!-- Loading message -->
-        <div *ngIf="isLoading">
+        <span>
           Building graph... Time remaining
           {{ math.max(timeRemaining, 0) | number : '1.0-0' }}
           seconds
-        </div>
+        </span>
 
         <!-- Error message -->
-        <div *ngIf="!isLoading && error">
+        <span *ngIf="error">
+          <br />
           There was an error building the graph. Please try again.
-        </div>
+        </span>
       </div>
     </div>
   </div>

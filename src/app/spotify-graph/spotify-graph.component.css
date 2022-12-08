@@ -13,9 +13,11 @@
   transform: translate(-50%, -50%);
 }
 
-#dialog-message {
+#dialog-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   background-color: white;
   border-radius: 25px;
   padding: 25px;
@@ -23,10 +25,23 @@
   font-weight: 600;
 }
 
-#graph-button-container {
+#playlists-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  width: 300px;
+}
+
+#playlist-select {
+  margin-top: 9px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  height: 47px;
+  border: solid 2px black;
+  border-radius: 5px;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #fefefe;
+  font-size: 16px;
+  padding: 5px;
 }
 
 #build-graph-button {
@@ -46,8 +61,15 @@
   font-size: small;
   margin-top: 7px;
   cursor: default;
+  width: 100%;
+  text-align: center;
 }
 
 #logout-link:hover {
   cursor: pointer;
+}
+
+#graph-spinner {
+  border-top-color: #000000 !important;
+  border-left-color: #000000 !important;
 }
