@@ -7,6 +7,7 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { SpotifyGraphComponent } from './spotify-graph/spotify-graph.component';
 import { DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { DecimalPipe } from '@angular/common';
     SpotifyAuthComponent,
     SpotifyGraphComponent
   ],
-  imports: [BrowserModule, HttpClientModule],
+  imports: [BrowserModule, HttpClientModule, FormsModule],
   providers: [DecimalPipe],
   bootstrap: [AppComponent]
 })
