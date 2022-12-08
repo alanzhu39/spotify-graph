@@ -24,8 +24,10 @@ export class SpotifyGraphComponent implements AfterViewInit {
   @ViewChild('network') el: ElementRef;
   private networkInstance: Network;
 
-  private readonly MAX_NODES = 1000;
+  // private readonly MAX_NODES = 1000;
+  private readonly MAX_NODES = 300;
   readonly REQS_PER_SEC = 50;
+  private readonly SCALING = false;
   readonly math = Math;
 
   // added seconds per 100 nodes to stabilize graph
@@ -39,7 +41,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
     queue: true
   });
 
-  readonly artists: Set<string> = new Set();
+  readonly artists: Map<string, number> = new Map();
   private readonly connections: Set<string> = new Set();
   playlists: SpotifyPlaylist[] = [];
   selectedPlaylistId: string = 'default';
@@ -94,6 +96,10 @@ export class SpotifyGraphComponent implements AfterViewInit {
     const options = {
       autoResize: false,
       nodes: {
+        scaling: {
+          min: 16,
+          max: 48
+        },
         borderWidth: 4,
         shape: 'dot',
         size: 30,
@@ -164,9 +170,12 @@ export class SpotifyGraphComponent implements AfterViewInit {
         const artistIds: string[] = [];
         data.items.forEach((savedTrack: SpotifySavedTrack) => {
           savedTrack.track.artists.forEach((artist: SpotifyArtist) => {
-            if (!this.artists.has(artist.id)) {
-              this.artists.add(artist.id);
-              artistIds.push(artist.id);
+            artistIds.push(artist.id);
+            const count = this.artists.get(artist.id);
+            if (count === undefined) {
+              this.artists.set(artist.id, 1);
+            } else {
+              this.artists.set(artist.id, count + 1);
             }
           });
         });
@@ -186,7 +195,10 @@ export class SpotifyGraphComponent implements AfterViewInit {
                     id: artist.id,
                     label: artist.name,
                     shape: 'circularImage',
-                    image: artistImage?.url
+                    image: artistImage?.url,
+                    value: this.SCALING
+                      ? this.artists.get(artist.id)
+                      : undefined
                   });
                   this.timeRemaining +=
                     1 / this.REQS_PER_SEC + this.GRAPH_LATENCY / 100;
@@ -216,7 +228,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   async getConnections() {
     // Get related artists
     let counter = 0;
-    for (const artistId of this.artists) {
+    for (const artistId of this.artists.keys()) {
       if (++counter % this.REQS_PER_SEC === 0) {
         this.timeRemaining -= 1;
         await delay(1000);

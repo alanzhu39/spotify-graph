@@ -1,17 +1,20 @@
 TODO:
 
 todo:
-- grouping and community detection
+- grouping and community detection/coloring
 
 12/6/22:
 In progress:
-- size of artist based on number of tracks
 - load testing
   - update max nodes parameter
   - still experiencing some occasional rate-limiting problems...
     - maybe we can do dynamic rate detection?
 
 Finished:
+- size of artist based on number of tracks
+  - tested scaling feature, decided to disable w/ feature flag for now
+  - since there are so many nodes, the scaling is not actually very compelling
+  - I think the more interesting insights are just from the natural clustering in the graph, which already works great
 - adding options to use tracks from a playlist instead
   - Add dropdown of playlists to retrieve tracks from
 - load testing
