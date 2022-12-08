@@ -220,7 +220,6 @@ export class SpotifyGraphComponent implements AfterViewInit {
         this.apiService.handleApiError(error);
         this.clearGraph();
         this.error = true;
-        this.graphLoading = false;
       }
     });
   }
@@ -263,7 +262,6 @@ export class SpotifyGraphComponent implements AfterViewInit {
         error: (error: HttpErrorResponse) => {
           this.apiService.handleApiError(error);
           this.error = true;
-          this.graphLoading = false;
         }
       });
     }
