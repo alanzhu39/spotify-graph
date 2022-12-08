@@ -1,20 +1,19 @@
 TODO:
 
 todo:
-- load testing
-  - update max nodes parameter
-  - should we remove low degree nodes?
 - grouping and community detection
-- change artist size by how many songs are saved?
-- graph playlists
 
 12/6/22:
 In progress:
-- adding options to use tracks from a playlist instead
-  - Add dropdown of playlists to retrieve tracks from
 - size of artist based on number of tracks
+- load testing
+  - update max nodes parameter
+  - still experiencing some occasional rate-limiting problems...
+    - maybe we can do dynamic rate detection?
 
 Finished:
+- adding options to use tracks from a playlist instead
+  - Add dropdown of playlists to retrieve tracks from
 - load testing
   - update max nodes parameter: getting rate limiting at 1500 nodes, 39 reqs per second.
   - should we remove low degree nodes?

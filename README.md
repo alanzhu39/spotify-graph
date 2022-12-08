@@ -123,7 +123,7 @@ To get a local copy up and running follow these simple example steps.
 
 ## Roadmap
 
-- [ ] Graphs based on playlists
+- [x] Graphs based on playlists
 - [ ] Node/edge weighting based on frequency of artist
 - [ ] Better graph grouping/clustering visualization
 - [ ] More graph customization options
