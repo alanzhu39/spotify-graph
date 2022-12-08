@@ -24,8 +24,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   @ViewChild('network') el: ElementRef;
   private networkInstance: Network;
 
-  // private readonly MAX_NODES = 1000;
-  private readonly MAX_NODES = 300;
+  private readonly MAX_NODES = 1000;
   readonly REQS_PER_SEC = 50;
   private readonly SCALING = false;
   readonly math = Math;
@@ -202,8 +201,6 @@ export class SpotifyGraphComponent implements AfterViewInit {
                   });
                   this.timeRemaining +=
                     1 / this.REQS_PER_SEC + this.GRAPH_LATENCY / 100;
-                } else {
-                  this.artists.delete(artistIds[i]);
                 }
               });
             });
