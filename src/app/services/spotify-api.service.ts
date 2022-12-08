@@ -40,7 +40,8 @@ export class SpotifyApiService {
     window.localStorage.setItem('AUTH_STATE', this.state);
     window.localStorage.setItem('AUTH_CODE_VERIFIER', this.codeVerifier);
 
-    const scope = 'user-library-read';
+    const scope =
+      'user-library-read playlist-read-private playlist-read-collaborative';
 
     window.location.href =
       'https://accounts.spotify.com/authorize?' +
@@ -101,6 +102,20 @@ export class SpotifyApiService {
     // Wrap spotify get playlists endpoint
     return this.http.get<{ items: SpotifyPlaylist[]; next: string | null }>(
       `https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=${offset}`,
+      {
+        headers: this.authHeader()
+      }
+    );
+  }
+
+  getPlaylistTracks(
+    playlistId: string,
+    limit: number = 20,
+    offset: number = 0
+  ) {
+    // Wrap spotify playlist items endpoint
+    return this.http.get<{ items: SpotifySavedTrack[]; next: string | null }>(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`,
       {
         headers: this.authHeader()
       }

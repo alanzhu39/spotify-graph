@@ -42,6 +42,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
   readonly artists: Set<string> = new Set();
   private readonly connections: Set<string> = new Set();
   playlists: SpotifyPlaylist[] = [];
+  selectedPlaylistId: string = 'default';
 
   isLoggedIn: boolean = false;
   showDialog: boolean = true;
@@ -76,7 +77,11 @@ export class SpotifyGraphComponent implements AfterViewInit {
 
   populateGraph() {
     this.graphLoading = true;
-    this.getArtists();
+    if (this.selectedPlaylistId === 'default') {
+      this.getArtists();
+    } else {
+      this.getArtists(this.selectedPlaylistId);
+    }
   }
 
   drawGraph(isDefault: boolean = false) {
@@ -113,8 +118,7 @@ export class SpotifyGraphComponent implements AfterViewInit {
           centralGravity: 0.003,
           springLength: 100,
           springConstant: 0.18
-        },
-        stabilization: { iterations: 150 }
+        }
       }
     };
     this.networkInstance = new Network(this.el.nativeElement, data, options);
@@ -147,12 +151,16 @@ export class SpotifyGraphComponent implements AfterViewInit {
     });
   }
 
-  getArtists(offset: number = 0) {
+  getArtists(playlistId?: string, offset: number = 0) {
     const limit = 50;
-    // Get saved tracks
-    this.apiService.getSavedTracks(limit, offset).subscribe({
-      next: (data: { items: SpotifySavedTrack[] }) => {
-        // Get artists from saved tracks
+    // Get tracks
+    const tracks =
+      playlistId === undefined
+        ? this.apiService.getSavedTracks(limit, offset)
+        : this.apiService.getPlaylistTracks(playlistId, limit, offset);
+    tracks.subscribe({
+      next: (data: { items: SpotifySavedTrack[]; next: string | null }) => {
+        // Get artists from tracks
         const artistIds: string[] = [];
         data.items.forEach((savedTrack: SpotifySavedTrack) => {
           savedTrack.track.artists.forEach((artist: SpotifyArtist) => {
@@ -189,9 +197,9 @@ export class SpotifyGraphComponent implements AfterViewInit {
             });
         }
 
-        if (data.items.length === limit && offset + limit < this.MAX_NODES) {
+        if (data.next != null && offset + limit < this.MAX_NODES) {
           // Use timeout to prevent rate-limiting
-          setTimeout(() => this.getArtists(offset + limit), 100);
+          setTimeout(() => this.getArtists(playlistId, offset + limit), 100);
         } else {
           void this.getConnections();
         }
@@ -207,9 +215,9 @@ export class SpotifyGraphComponent implements AfterViewInit {
 
   async getConnections() {
     // Get related artists
-    let counter = 1;
+    let counter = 0;
     for (const artistId of this.artists) {
-      if (counter++ % this.REQS_PER_SEC === 0) {
+      if (++counter % this.REQS_PER_SEC === 0) {
         this.timeRemaining -= 1;
         await delay(1000);
       }
@@ -225,24 +233,27 @@ export class SpotifyGraphComponent implements AfterViewInit {
               this.edges.add({ from: artistId, to: artist.id });
             }
           });
+
+          // Flush after last artist
+          if (counter === this.artists.size) {
+            this.nodes.flush();
+            this.edges.flush();
+            const interval = setInterval(() => (this.timeRemaining -= 1), 1000);
+            this.networkInstance.once('stabilizationIterationsDone', () => {
+              this.graphLoading = false;
+              this.showDialog = false;
+              clearInterval(interval);
+              this.timeRemaining = 0;
+            });
+            this.networkInstance.stabilize(200);
+          }
         },
         error: (error: HttpErrorResponse) => {
           this.apiService.handleApiError(error);
-          this.clearGraph();
           this.error = true;
           this.graphLoading = false;
         }
       });
     }
-    this.nodes.flush();
-    this.edges.flush();
-    const interval = setInterval(() => (this.timeRemaining -= 1), 1000);
-    this.networkInstance.stabilize(200);
-    this.networkInstance.once('stabilizationIterationsDone', () => {
-      this.graphLoading = false;
-      this.showDialog = false;
-      clearInterval(interval);
-      this.timeRemaining = 0;
-    });
   }
 }

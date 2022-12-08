@@ -12,10 +12,15 @@
           <div id="playlists-content" *ngIf="!playlistsLoading; else elseBlock">
             <!-- Playlist selection -->
             <label for="playlist-select">Choose a playlist:</label>
-
-            <select name="playlists" id="playlist-select">
-              <option value="">--Please choose an option--</option>
-              <!-- TODO: playlist options -->
+            <select
+              [(ngModel)]="selectedPlaylistId"
+              name="playlists"
+              id="playlist-select"
+            >
+              <option value="default">Liked Songs</option>
+              <option *ngFor="let playlist of playlists" [value]="playlist.id">
+                {{ playlist.name }}
+              </option>
             </select>
             <br />
 
@@ -48,9 +53,9 @@
       </div>
 
       <!-- Building graph -->
-      <div *ngIf="graphLoading" id="dialog-content">
+      <div *ngIf="graphLoading || error" id="dialog-content">
         <!-- Loading message -->
-        <span>
+        <span *ngIf="graphLoading">
           Building graph... Time remaining
           {{ math.max(timeRemaining, 0) | number : '1.0-0' }}
           seconds
