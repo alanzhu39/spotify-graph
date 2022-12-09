@@ -151,7 +151,8 @@ export class SpotifyGraphComponent implements AfterViewInit {
       },
       error: (error) => {
         this.apiService.handleApiError(error);
-        this.playlistsLoading = false;
+        // Retry on error (access token expired)
+        this.getPlaylists(offset);
       }
     });
   }
@@ -215,8 +216,8 @@ export class SpotifyGraphComponent implements AfterViewInit {
       },
       error: (error) => {
         this.apiService.handleApiError(error);
-        this.clearGraph();
-        this.error = true;
+        // Retry on error (access token expired)
+        this.getArtists(playlistId, offset);
       }
     });
   }
@@ -257,8 +258,8 @@ export class SpotifyGraphComponent implements AfterViewInit {
           }
         },
         error: (error: HttpErrorResponse) => {
+          // Continue on error (rate limited)
           this.apiService.handleApiError(error);
-          this.error = true;
         }
       });
     }
