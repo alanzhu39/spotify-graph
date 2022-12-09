@@ -152,12 +152,6 @@ export class SpotifyApiService {
     );
   }
 
-  handleApiError(error: HttpErrorResponse) {
-    if (error.status === 401) {
-      this.refreshAuthToken();
-    }
-  }
-
   refreshAuthToken() {
     const body = new URLSearchParams({
       refresh_token: this.authToken.refresh_token,

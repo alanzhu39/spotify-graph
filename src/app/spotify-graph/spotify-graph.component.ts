@@ -149,10 +149,15 @@ export class SpotifyGraphComponent implements AfterViewInit {
           this.playlistsLoading = false;
         }
       },
-      error: (error) => {
-        this.apiService.handleApiError(error);
-        // Retry on error (access token expired)
-        this.getPlaylists(offset);
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Retry if access token expired
+          this.apiService.refreshAuthToken();
+          this.getPlaylists(offset);
+        } else {
+          // Otherwise continue
+          this.getPlaylists(offset + limit);
+        }
       }
     });
   }
@@ -214,10 +219,15 @@ export class SpotifyGraphComponent implements AfterViewInit {
           void this.getConnections();
         }
       },
-      error: (error) => {
-        this.apiService.handleApiError(error);
-        // Retry on error (access token expired)
-        this.getArtists(playlistId, offset);
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Retry if access token expired
+          this.apiService.refreshAuthToken();
+          this.getArtists(playlistId, offset);
+        } else {
+          // Otherwise continue
+          this.getArtists(playlistId, offset + limit);
+        }
       }
     });
   }
@@ -258,8 +268,10 @@ export class SpotifyGraphComponent implements AfterViewInit {
           }
         },
         error: (error: HttpErrorResponse) => {
-          // Continue on error (rate limited)
-          this.apiService.handleApiError(error);
+          if (error.status === 401) {
+            // Refresh if access token expired
+            this.apiService.refreshAuthToken();
+          }
         }
       });
     }
