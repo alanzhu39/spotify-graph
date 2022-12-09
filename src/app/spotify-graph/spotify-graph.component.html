@@ -55,7 +55,7 @@
       <!-- Building graph -->
       <div *ngIf="graphLoading" id="dialog-content">
         <!-- Loading message -->
-        <span *ngIf="graphLoading">
+        <span>
           Building graph... Time remaining
           {{ math.max(timeRemaining, 0) | number : '1.0-0' }}
           seconds
